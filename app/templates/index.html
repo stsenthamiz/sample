@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Buffalo Trait Prediction</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+<!-- Loader Overlay -->
+<div id="loader" class="loader-overlay" style="display:none;">
+    <div class="spinner"></div>
+</div>
+
+<div class="container">
+  <div class="header">
+    <h1>Buffalo Trait Prediction</h1>
+    <p>Upload an image to predict traits and view results</p>
+  </div>
+
+  <form action="/predict" method="post" enctype="multipart/form-data" class="upload-form" id="upload-form">
+    <label class="file-label" id="file-label">
+      <input type="file" name="file" accept="image/*" required id="file-input">
+      <span class="file-text" id="file-text">Click or Drag & Drop Image</span>
+    </label>
+    <button type="submit" class="btn">Predict & Draw Traits</button>
+  </form>
+
+  {% if result and original_file and processed_file %}
+  <div class="result-section">
+    <h2>Prediction Result:</h2>
+    <p class="result">{{ result }}</p>
+    <div class="images">
+      <div class="image-box">
+        <h3>Original Image</h3>
+        <img src="{{ url_for('static', filename='uploads/' + original_file) }}" alt="Original">
+      </div>
+      <div class="image-box">
+        <h3>Processed Image</h3>
+        <img src="{{ url_for('static', filename='uploads/' + processed_file) }}" alt="Processed">
+      </div>
+    </div>
+  </div>
+  {% endif %}
+</div>
+
+<script>
+const fileInput = document.getElementById('file-input');
+const fileLabel = document.getElementById('file-label');
+const fileText = document.getElementById('file-text');
+const uploadForm = document.getElementById('upload-form');
+const loader = document.getElementById('loader');
+
+// File input change
+fileInput.addEventListener('change', () => {
+    if(fileInput.files.length > 0) {
+        fileText.textContent = fileInput.files[0].name;
+    }
+});
+
+// Drag-and-drop effect
+fileLabel.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    fileLabel.classList.add('drag-over');
+});
+fileLabel.addEventListener('dragleave', (e) => {
+    e.preventDefault();
+    fileLabel.classList.remove('drag-over');
+});
+fileLabel.addEventListener('drop', (e) => {
+    e.preventDefault();
+    fileLabel.classList.remove('drag-over');
+    fileInput.files = e.dataTransfer.files;
+    if(fileInput.files.length > 0) {
+        fileText.textContent = fileInput.files[0].name;
+    }
+});
+
+// Show loader on submit
+uploadForm.addEventListener('submit', () => {
+    loader.style.display = 'flex';
+});
+</script>
+
+</body>
+</html>
